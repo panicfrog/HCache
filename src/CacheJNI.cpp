@@ -3,3 +3,4 @@
 //
 
 #include "CacheJNI.hpp"
+#include <jni.h>

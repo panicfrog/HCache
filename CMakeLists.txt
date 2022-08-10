@@ -63,8 +63,16 @@ set_target_properties(
 	CXX_EXTENSIONS OFF
 	POSITON_INDEPENDENT ON
 	)
-
-target_link_libraries(
-	${PACKAGE_NAME}
-	SQLiteCpp
+if (CMAKE_SYSTEM_NAME MATCHES "Android")
+	find_library(log-lib log)
+	target_link_libraries(
+			${PACKAGE_NAME}
+			${log-lib}
+			SQLiteCpp
 	)
+elseif()
+	target_link_libraries(
+			${PACKAGE_NAME}
+			SQLiteCpp
+	)
+endif()

@@ -3,10 +3,28 @@
  */
 package HCache
 
-class HCacheLibrary {
-    companion object {
-      fun install() {
+//sealed interface CacheValue
+//sealed class DoubleVale(val value: Double): CacheValue
+//sealed class BoolValue(val value: Boolean): CacheValue
+//sealed class StringValue(val value: String): CacheValue
+//sealed class StringObjectValue(val value: String): CacheValue
 
-      }
+/// type int-> 'I', long-> 'L', float-> 'F', double-> 'D', boolean-> 'B', string-> 'S', objectString-> 'OS', None-> 'N'
+data class CacheValue(val value: Any, val type: String)
+
+class HCacheLibrary(val path: String) {
+    object Shared {
+
     }
+    init {
+        System.loadLibrary("HCache")
+    }
+
+    external fun initKv(): Boolean
+    external fun get(key: String, value: CacheValue): Boolean
+    external fun setBoolean(key: String, value: Boolean): Boolean
+    external fun setInt(key: String, value: Int): Boolean
+    external fun setDouble(key: String, value: Double): Boolean
+    external fun setString(key: String, value: String): Boolean
+    external fun setObjectString(key: String, value: String): Boolean
 }

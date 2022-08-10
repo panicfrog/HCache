@@ -35,6 +35,7 @@ android {
     targetSdkVersion safeExtGet('Cache_targetSdkVersion', 29)
     versionCode 1
     versionName "1.0"
+    ndkVersion "21.4.7075529"
 
     externalNativeBuild {
       cmake {
@@ -68,17 +69,8 @@ android {
     targetCompatibility JavaVersion.VERSION_1_8
   }
 
-  configurations {
-    extractJNI
-  }
-  ndkVersion "21.4.7075529"
 }
 
-repositories {
-  mavenLocal()
-  google()
-  mavenCentral()
-}
 
 def extracted = false;
 task extractJNIFiles {
@@ -101,6 +93,10 @@ task extractJNIFiles {
 tasks.whenTaskAdded { task ->
   task.dependsOn(extractJNIFiles);
 }
+repositories {
+  mavenCentral()
+}
 dependencies {
   implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 }
+
