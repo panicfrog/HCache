@@ -13,9 +13,6 @@ package HCache
 data class CacheValue(val value: Any, val type: String)
 
 class HCacheLibrary(val path: String) {
-    object Shared {
-
-    }
     init {
         System.loadLibrary("HCache")
     }

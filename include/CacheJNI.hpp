@@ -30,62 +30,51 @@ std::string jstring2string(JNIEnv *env, jstring jStr) {
     return ret;
 }
 
-const char * getPathField(JNIEnv *env, jobject thiz) {
+cache::DiskKVStorage * getPathField(JNIEnv *env, jobject thiz) {
     const jclass obj = env->GetObjectClass(thiz);
     const jfieldID pathID = env->GetFieldID(obj, "path", "Ljava/lang/String;");
     const jstring path = (jstring)env->GetObjectField(thiz, pathID);
     jboolean isCopy;
     const char *_path = env->GetStringUTFChars(path, &isCopy);
-    env->DeleteLocalRef(obj);
-    env->DeleteLocalRef(path);
-    return _path;
+    if (_path == NULL) {
+        env->DeleteLocalRef(obj);
+        return nullptr;
+    } else {
+        auto kv = cache::KVSingleton::getInstance().getKV(_path);
+        env->DeleteLocalRef(obj);
+        env->ReleaseStringUTFChars(path, _path);
+        return kv;
+    }
 }
 
 JNIEXPORT jboolean JNICALL
 Java_HCache_HCacheLibrary_initKv(JNIEnv *env, jobject thiz) {
-    const char *_path = getPathField(env, thiz);
-    if (_path == NULL) {
+    auto kv = getPathField(env, thiz);
+    if (kv == nullptr) {
         return JNI_FALSE;
     }
-    cache::KVSingleton::getInstance().getKV(_path);
     return JNI_TRUE;
 }
 
-//JNIEXPORT jboolean JNICALL
-//Java_HCache_HCacheLibrary_get(JNIEnv *env, jobject thiz, jstring key) {
-//    const char *_path = getPathField(env, thiz);
-//    if (_path == NULL) {
-//        return JNI_FALSE;
-//    }
-//    auto kv = cache::KVSingleton::getInstance().getKV(_path);
-//    auto _key = jstring2string(env, key);
-//    auto value = kv->getValue(_key);
-//    /// TODO 转成kotlin原生类型
-//    return JNI_TRUE;
-//}
-
 JNIEXPORT jboolean JNICALL
 Java_HCache_HCacheLibrary_get(JNIEnv *env, jobject thiz, jstring key, jobject value) {
-    const char *_path = getPathField(env, thiz);
-    if (_path == NULL) {
+    auto kv = getPathField(env, thiz);
+    if (kv == nullptr) {
         return JNI_FALSE;
     }
-    auto kv = cache::KVSingleton::getInstance().getKV(_path);
     auto _key = jstring2string(env, key);
     auto cValue = kv->getValue(_key);
     const jclass valueObj = env->GetObjectClass(thiz);
     const jfieldID typeID = env->GetFieldID(valueObj, "type", "Ljava/lang/String;");
+    if (typeID == NULL) {
+        return JNI_FALSE;
+    }
     const jfieldID valueID = env->GetFieldID(valueObj, "value", "Ljava/lang/Object;");
+    if (valueID == NULL) {
+        return JNI_FALSE;
+    }
     /// type int-> 'I', long-> 'L', float-> 'F', double-> 'D', boolean-> 'B', string-> 'S', objectString-> 'OS', None-> 'N'
 
-//    typedef uint8_t  jboolean; /* unsigned 8 bits */
-//    typedef int8_t   jbyte;    /* signed 8 bits */
-//    typedef uint16_t jchar;    /* unsigned 16 bits */
-//    typedef int16_t  jshort;   /* signed 16 bits */
-//    typedef int32_t  jint;     /* signed 32 bits */
-//    typedef int64_t  jlong;    /* signed 64 bits */
-//    typedef float    jfloat;   /* 32-bit IEEE 754 */
-//    typedef double   jdouble;  /* 64-bit IEEE 754 */
     if (cValue.isBool()) {
         auto v =  cValue.getBool();
         env->SetBooleanField(value, valueID, v ? JNI_TRUE : JNI_FALSE);
@@ -97,75 +86,91 @@ Java_HCache_HCacheLibrary_get(JNIEnv *env, jobject thiz, jstring key, jobject va
         env -> SetObjectField(value,typeID,env->NewStringUTF("I"));
     } else if (cValue.isLong()) {
         auto v =  cValue.getLong();
+        env->SetLongField(value, valueID, v);
         env -> SetObjectField(value,typeID,env->NewStringUTF("L"));
     } else if (cValue.isFloat()) {
         auto v =  cValue.getFloat();
+        env->SetFloatField(value, valueID, v);
         env -> SetObjectField(value,typeID,env->NewStringUTF("F"));
     } else if (cValue.isDouble()) {
         auto v =  cValue.getDouble();
+        env->SetDoubleField(value, valueID, v);
         env -> SetObjectField(value,typeID,env->NewStringUTF("D"));
     } else if (cValue.isString()) {
-        auto v =  cValue.getString();
+        string s =  cValue.getString();
+        auto v = env->NewStringUTF(s.c_str());
+        env->SetObjectField(value, valueID, v);
         env -> SetObjectField(value,typeID,env->NewStringUTF("S"));
     } else if (cValue.isJsonString()) {
-        auto v =  cValue.getJsonString();
+        string s =  cValue.getJsonString();
+        auto v = env->NewStringUTF(s.c_str());
+        env->SetObjectField(value, valueID, v);
         env -> SetObjectField(value,typeID,env->NewStringUTF("OS"));
     } else if (cValue.isNull()) {
         env -> SetObjectField(value,typeID,env->NewStringUTF("N"));
     }
+    if (env->ExceptionCheck()) {
+        return JNI_FALSE;
+    }
     env->DeleteLocalRef(valueObj);
-    /// TODO 转成kotlin原生类型
     return JNI_TRUE;
 }
 
 JNIEXPORT jboolean JNICALL
 Java_HCache_HCacheLibrary_setBoolean(JNIEnv *env, jobject thiz, jstring key, jboolean value) {
-    const char *_path = getPathField(env, thiz);
-    if (_path == NULL) {
+    auto kv = getPathField(env, thiz);
+    if (kv == nullptr) {
         return JNI_FALSE;
     }
-    auto kv = cache::KVSingleton::getInstance().getKV(_path);
-    // TODO: implement setBoolean()
+    auto _key = jstring2string(env, key);
+    kv->save(_key, value);
+    return  JNI_TRUE;
 }
 
 JNIEXPORT jboolean JNICALL
 Java_HCache_HCacheLibrary_setInt(JNIEnv *env, jobject thiz, jstring key, jint value) {
-    const char *_path = getPathField(env, thiz);
-    if (_path == NULL) {
+    auto kv = getPathField(env, thiz);
+    if (kv == nullptr) {
         return JNI_FALSE;
     }
-    auto kv = cache::KVSingleton::getInstance().getKV(_path);
-    // TODO: implement setInt()
+    auto _key = jstring2string(env, key);
+    kv->save(_key, int(value));
+    return  JNI_TRUE;
 }
 
 JNIEXPORT jboolean JNICALL
 Java_HCache_HCacheLibrary_setDouble(JNIEnv *env, jobject thiz, jstring key, jdouble value) {
-    const char *_path = getPathField(env, thiz);
-    if (_path == NULL) {
+    auto kv = getPathField(env, thiz);
+    if (kv == nullptr) {
         return JNI_FALSE;
     }
-    auto kv = cache::KVSingleton::getInstance().getKV(_path);
-    // TODO: implement setDouble()
+    auto _key = jstring2string(env, key);
+    kv->save(_key, double(value));
+    return  JNI_TRUE;
 }
 
 JNIEXPORT jboolean JNICALL
 Java_HCache_HCacheLibrary_setString(JNIEnv *env, jobject thiz, jstring key, jstring value) {
-    const char *_path = getPathField(env, thiz);
-    if (_path == NULL) {
+    auto kv = getPathField(env, thiz);
+    if (kv == nullptr) {
         return JNI_FALSE;
     }
-    auto kv = cache::KVSingleton::getInstance().getKV(_path);
-    // TODO: implement setString()
+    auto _key = jstring2string(env, key);
+    auto _value = jstring2string(env, value);
+    kv->save(_key, _value, false);
+    return  JNI_TRUE;
 }
 
 JNIEXPORT jboolean JNICALL
 Java_HCache_HCacheLibrary_setObjectString(JNIEnv *env, jobject thiz, jstring key, jstring value) {
-    const char *_path = getPathField(env, thiz);
-    if (_path == NULL) {
+    auto kv = getPathField(env, thiz);
+    if (kv == nullptr) {
         return JNI_FALSE;
     }
-    auto kv = cache::KVSingleton::getInstance().getKV(_path);
-    // TODO: implement setObjectString()
+    auto _key = jstring2string(env, key);
+    auto _value = jstring2string(env, value);
+    kv->save(_key, _value, true);
+    return  JNI_TRUE;
 }
 
 #ifdef __cplusplus
