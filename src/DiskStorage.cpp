@@ -137,7 +137,7 @@ void DiskKVStorage::save(const string& key, const bool value) const {
 void DiskKVStorage::save(const string& key, const string& value, const bool is_object) const {
   const char * _value = value.data();
   int size = int(value.size());
-  int type = is_object ? CacheValue::DataType::STRING : CacheValue::DataType::JSON_STRING;
+  int type = is_object ? CacheValue::DataType::JSON_STRING : CacheValue::DataType::STRING;
   innerSave(key, _value, size, type);
 }
 

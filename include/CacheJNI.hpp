@@ -7,10 +7,9 @@
 
 #include <jni.h>
 #include "KVSingleton.hpp"
+#include <jni.h>
 
-#ifdef __cplusplus
 extern "C" {
-#endif
 std::string jstring2string(JNIEnv *env, jstring jStr) {
     if (!jStr)
         return "";
@@ -64,50 +63,74 @@ Java_HCache_HCacheLibrary_get(JNIEnv *env, jobject thiz, jstring key, jobject va
     }
     auto _key = jstring2string(env, key);
     auto cValue = kv->getValue(_key);
-    const jclass valueObj = env->GetObjectClass(thiz);
+    const jclass valueObj = env->GetObjectClass(value);
     const jfieldID typeID = env->GetFieldID(valueObj, "type", "Ljava/lang/String;");
     if (typeID == NULL) {
-        return JNI_FALSE;
-    }
-    const jfieldID valueID = env->GetFieldID(valueObj, "value", "Ljava/lang/Object;");
-    if (valueID == NULL) {
         return JNI_FALSE;
     }
     /// type int-> 'I', long-> 'L', float-> 'F', double-> 'D', boolean-> 'B', string-> 'S', objectString-> 'OS', None-> 'N'
 
     if (cValue.isBool()) {
         auto v =  cValue.getBool();
+        const jfieldID valueID = env->GetFieldID(valueObj, "boolValue", "Z");
+        if (valueID == NULL) {
+            return JNI_FALSE;
+        }
         env->SetBooleanField(value, valueID, v ? JNI_TRUE : JNI_FALSE);
-        env -> SetObjectField(value,typeID,env->NewStringUTF("B"));
+        env->SetObjectField(value,typeID,env->NewStringUTF("B"));
     } else if (cValue.isInt()) {
         /// TODO 需要考虑int是否是int32_t
+        const jfieldID valueID = env->GetFieldID(valueObj, "intValue", "I");
+        if (valueID == NULL) {
+            return JNI_FALSE;
+        }
         auto v =  cValue.getInt();
         env->SetIntField(value, valueID, v);
-        env -> SetObjectField(value,typeID,env->NewStringUTF("I"));
+        env->SetObjectField(value,typeID,env->NewStringUTF("I"));
     } else if (cValue.isLong()) {
+        const jfieldID valueID = env->GetFieldID(valueObj, "longValue", "J");
+        if (valueID == NULL) {
+            return JNI_FALSE;
+        }
         auto v =  cValue.getLong();
         env->SetLongField(value, valueID, v);
-        env -> SetObjectField(value,typeID,env->NewStringUTF("L"));
+        env->SetObjectField(value,typeID,env->NewStringUTF("L"));
     } else if (cValue.isFloat()) {
+        const jfieldID valueID = env->GetFieldID(valueObj, "floatValue", "F");
+        if (valueID == NULL) {
+            return JNI_FALSE;
+        }
         auto v =  cValue.getFloat();
         env->SetFloatField(value, valueID, v);
-        env -> SetObjectField(value,typeID,env->NewStringUTF("F"));
+        env->SetObjectField(value,typeID,env->NewStringUTF("F"));
     } else if (cValue.isDouble()) {
+        const jfieldID valueID = env->GetFieldID(valueObj, "doubleValue", "D");
+        if (valueID == NULL) {
+            return JNI_FALSE;
+        }
         auto v =  cValue.getDouble();
         env->SetDoubleField(value, valueID, v);
-        env -> SetObjectField(value,typeID,env->NewStringUTF("D"));
+        env->SetObjectField(value,typeID,env->NewStringUTF("D"));
     } else if (cValue.isString()) {
+        const jfieldID valueID = env->GetFieldID(valueObj, "stringValue", "Ljava/lang/String;");
+        if (valueID == NULL) {
+            return JNI_FALSE;
+        }
         string s =  cValue.getString();
         auto v = env->NewStringUTF(s.c_str());
         env->SetObjectField(value, valueID, v);
-        env -> SetObjectField(value,typeID,env->NewStringUTF("S"));
+        env->SetObjectField(value,typeID,env->NewStringUTF("S"));
     } else if (cValue.isJsonString()) {
+        const jfieldID valueID = env->GetFieldID(valueObj, "stringValue", "Ljava/lang/String;");
+        if (valueID == NULL) {
+            return JNI_FALSE;
+        }
         string s =  cValue.getJsonString();
         auto v = env->NewStringUTF(s.c_str());
         env->SetObjectField(value, valueID, v);
-        env -> SetObjectField(value,typeID,env->NewStringUTF("OS"));
+        env->SetObjectField(value,typeID,env->NewStringUTF("OS"));
     } else if (cValue.isNull()) {
-        env -> SetObjectField(value,typeID,env->NewStringUTF("N"));
+        env->SetObjectField(value,typeID,env->NewStringUTF("N"));
     }
     if (env->ExceptionCheck()) {
         return JNI_FALSE;
@@ -129,6 +152,17 @@ Java_HCache_HCacheLibrary_setBoolean(JNIEnv *env, jobject thiz, jstring key, jbo
 
 JNIEXPORT jboolean JNICALL
 Java_HCache_HCacheLibrary_setInt(JNIEnv *env, jobject thiz, jstring key, jint value) {
+    auto kv = getPathField(env, thiz);
+    if (kv == nullptr) {
+        return JNI_FALSE;
+    }
+    auto _key = jstring2string(env, key);
+    kv->save(_key, int(value));
+    return  JNI_TRUE;
+}
+
+JNIEXPORT jboolean JNICALL
+Java_HCache_HCacheLibrary_setLong(JNIEnv *env, jobject thiz, jstring key, jlong value) {
     auto kv = getPathField(env, thiz);
     if (kv == nullptr) {
         return JNI_FALSE;
@@ -173,9 +207,7 @@ Java_HCache_HCacheLibrary_setObjectString(JNIEnv *env, jobject thiz, jstring key
     return  JNI_TRUE;
 }
 
-#ifdef __cplusplus
 };
-#endif
 
 
 #endif //HCACHE_CACHEJNI_H

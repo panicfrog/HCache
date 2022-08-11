@@ -72,30 +72,28 @@ android {
 }
 
 
-def extracted = false;
-task extractJNIFiles {
-  if (extracted) return
-  doLast {
-    configurations.extractJNI.files.each {
-      def file = it.absoluteFile
-
-      copy {
-        from zipTree(file)
-        into "$buildDir/$file.name"
-        include "jni/**/*"
-      }
-      extracted = true;
-    }
-  }
-}
+//def extracted = false;
+//task extractJNIFiles {
+//  if (extracted) return
+//  doLast {
+//    configurations.extractJNI.files.each {
+//      def file = it.absoluteFile
+//
+//      copy {
+//        from zipTree(file)
+//        into "$buildDir/$file.name"
+//        include "jni/**/*"
+//      }
+//      extracted = true;
+//    }
+//  }
+//}
 
 // Extract JNI files as soon as first task is added
-tasks.whenTaskAdded { task ->
-  task.dependsOn(extractJNIFiles);
-}
-repositories {
-  mavenCentral()
-}
+//tasks.whenTaskAdded { task ->
+//  task.dependsOn(extractJNIFiles);
+//}
+
 dependencies {
   implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 }

@@ -3,6 +3,8 @@
  */
 package HCache
 
+import javax.security.auth.callback.CallbackHandler
+
 //sealed interface CacheValue
 //sealed class DoubleVale(val value: Double): CacheValue
 //sealed class BoolValue(val value: Boolean): CacheValue
@@ -10,17 +12,114 @@ package HCache
 //sealed class StringObjectValue(val value: String): CacheValue
 
 /// type int-> 'I', long-> 'L', float-> 'F', double-> 'D', boolean-> 'B', string-> 'S', objectString-> 'OS', None-> 'N'
-data class CacheValue(val value: Any, val type: String)
+data class CacheValue(
+    val type: String = "N",
+    val boolValue: Boolean = false,
+    val intValue: Int = 0,
+    val longValue: Long = 0,
+    val floatValue: Float = 0.0F,
+    val doubleValue: Double = 0.0,
+    val stringValue: String = "",
+)
+
+fun CacheValue.isBoolean(): Boolean {
+    return this.type === "B"
+}
+fun CacheValue.isInt(): Boolean {
+    return this.type == "I"
+}
+fun CacheValue.isLong(): Boolean {
+    return this.type == "L"
+}
+fun CacheValue.isFloat(): Boolean {
+    return this.type == "F"
+}
+fun CacheValue.isDouble(): Boolean {
+    return this.type == "D"
+}
+fun CacheValue.isString(): Boolean {
+    return this.type == "S"
+}
+fun CacheValue.isStringObject(): Boolean {
+    return this.type == "SO"
+}
+fun CacheValue.isNull(): Boolean {
+    return this.type == "N"
+}
+
+fun CacheValue.getBoolean(): Boolean? {
+    return if (this.isBoolean()) {
+        this.boolValue
+    } else {
+        null
+    }
+}
+
+fun CacheValue.getInt(): Int? {
+    return if (this.isInt()) {
+        this.intValue
+    } else {
+        null
+    }
+}
+
+fun CacheValue.getLong(): Long? {
+    return if (this.isLong()) {
+        this.longValue
+    } else {
+        null
+    }
+}
+
+fun CacheValue.getFloat(): Float? {
+    return if (this.isFloat()) {
+        this.floatValue
+    } else {
+        null
+    }
+}
+
+fun CacheValue.getDouble(): Double? {
+    return if (this.isDouble()) {
+        this.doubleValue
+    } else {
+        null
+    }
+}
+
+fun CacheValue.getString(): String? {
+    return if (this.isString()) {
+        this.stringValue
+    } else {
+        null
+    }
+}
+
+fun CacheValue.getStringObject(): String? {
+    return if (this.isStringObject()) {
+        this.stringValue
+    } else {
+        null
+    }
+}
+
 
 class HCacheLibrary(val path: String) {
     init {
         System.loadLibrary("HCache")
     }
 
+    fun get(key: String): CacheValue {
+        val value = CacheValue()
+        this.get(key, value)
+        return value
+    }
+
     external fun initKv(): Boolean
-    external fun get(key: String, value: CacheValue): Boolean
+    private external fun get(key: String, value: CacheValue): Boolean
     external fun setBoolean(key: String, value: Boolean): Boolean
     external fun setInt(key: String, value: Int): Boolean
+    external fun setLong(key: String, value: Long): Boolean
     external fun setDouble(key: String, value: Double): Boolean
     external fun setString(key: String, value: String): Boolean
     external fun setObjectString(key: String, value: String): Boolean
