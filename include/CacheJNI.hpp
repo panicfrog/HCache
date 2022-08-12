@@ -29,7 +29,7 @@ std::string jstring2string(JNIEnv *env, jstring jStr) {
     return ret;
 }
 
-cache::DiskKVStorage * getPathField(JNIEnv *env, jobject thiz) {
+cache::DiskKVStorage * getKV(JNIEnv *env, jobject thiz) {
     const jclass obj = env->GetObjectClass(thiz);
     const jfieldID pathID = env->GetFieldID(obj, "path", "Ljava/lang/String;");
     const jstring path = (jstring)env->GetObjectField(thiz, pathID);
@@ -47,8 +47,8 @@ cache::DiskKVStorage * getPathField(JNIEnv *env, jobject thiz) {
 }
 
 JNIEXPORT jboolean JNICALL
-Java_HCache_HCacheLibrary_initKv(JNIEnv *env, jobject thiz) {
-    auto kv = getPathField(env, thiz);
+Java_HCache_HCache_initKv(JNIEnv *env, jobject thiz) {
+    auto kv = getKV(env, thiz);
     if (kv == nullptr) {
         return JNI_FALSE;
     }
@@ -56,8 +56,8 @@ Java_HCache_HCacheLibrary_initKv(JNIEnv *env, jobject thiz) {
 }
 
 JNIEXPORT jboolean JNICALL
-Java_HCache_HCacheLibrary_get(JNIEnv *env, jobject thiz, jstring key, jobject value) {
-    auto kv = getPathField(env, thiz);
+Java_HCache_HCache_get(JNIEnv *env, jobject thiz, jstring key, jobject value) {
+    auto kv = getKV(env, thiz);
     if (kv == nullptr) {
         return JNI_FALSE;
     }
@@ -140,8 +140,8 @@ Java_HCache_HCacheLibrary_get(JNIEnv *env, jobject thiz, jstring key, jobject va
 }
 
 JNIEXPORT jboolean JNICALL
-Java_HCache_HCacheLibrary_setBoolean(JNIEnv *env, jobject thiz, jstring key, jboolean value) {
-    auto kv = getPathField(env, thiz);
+Java_HCache_HCache_setBoolean(JNIEnv *env, jobject thiz, jstring key, jboolean value) {
+    auto kv = getKV(env, thiz);
     if (kv == nullptr) {
         return JNI_FALSE;
     }
@@ -151,8 +151,8 @@ Java_HCache_HCacheLibrary_setBoolean(JNIEnv *env, jobject thiz, jstring key, jbo
 }
 
 JNIEXPORT jboolean JNICALL
-Java_HCache_HCacheLibrary_setInt(JNIEnv *env, jobject thiz, jstring key, jint value) {
-    auto kv = getPathField(env, thiz);
+Java_HCache_HCache_setInt(JNIEnv *env, jobject thiz, jstring key, jint value) {
+    auto kv = getKV(env, thiz);
     if (kv == nullptr) {
         return JNI_FALSE;
     }
@@ -162,8 +162,8 @@ Java_HCache_HCacheLibrary_setInt(JNIEnv *env, jobject thiz, jstring key, jint va
 }
 
 JNIEXPORT jboolean JNICALL
-Java_HCache_HCacheLibrary_setLong(JNIEnv *env, jobject thiz, jstring key, jlong value) {
-    auto kv = getPathField(env, thiz);
+Java_HCache_HCache_setLong(JNIEnv *env, jobject thiz, jstring key, jlong value) {
+    auto kv = getKV(env, thiz);
     if (kv == nullptr) {
         return JNI_FALSE;
     }
@@ -173,8 +173,8 @@ Java_HCache_HCacheLibrary_setLong(JNIEnv *env, jobject thiz, jstring key, jlong 
 }
 
 JNIEXPORT jboolean JNICALL
-Java_HCache_HCacheLibrary_setFloat(JNIEnv *env, jobject thiz, jstring key, jfloat value) {
-    auto kv = getPathField(env, thiz);
+Java_HCache_HCache_setFloat(JNIEnv *env, jobject thiz, jstring key, jfloat value) {
+    auto kv = getKV(env, thiz);
     if (kv == nullptr) {
         return JNI_FALSE;
     }
@@ -184,8 +184,8 @@ Java_HCache_HCacheLibrary_setFloat(JNIEnv *env, jobject thiz, jstring key, jfloa
 }
 
 JNIEXPORT jboolean JNICALL
-Java_HCache_HCacheLibrary_setDouble(JNIEnv *env, jobject thiz, jstring key, jdouble value) {
-    auto kv = getPathField(env, thiz);
+Java_HCache_HCache_setDouble(JNIEnv *env, jobject thiz, jstring key, jdouble value) {
+    auto kv = getKV(env, thiz);
     if (kv == nullptr) {
         return JNI_FALSE;
     }
@@ -195,8 +195,8 @@ Java_HCache_HCacheLibrary_setDouble(JNIEnv *env, jobject thiz, jstring key, jdou
 }
 
 JNIEXPORT jboolean JNICALL
-Java_HCache_HCacheLibrary_setString(JNIEnv *env, jobject thiz, jstring key, jstring value) {
-    auto kv = getPathField(env, thiz);
+Java_HCache_HCache_setString(JNIEnv *env, jobject thiz, jstring key, jstring value) {
+    auto kv = getKV(env, thiz);
     if (kv == nullptr) {
         return JNI_FALSE;
     }
@@ -207,8 +207,8 @@ Java_HCache_HCacheLibrary_setString(JNIEnv *env, jobject thiz, jstring key, jstr
 }
 
 JNIEXPORT jboolean JNICALL
-Java_HCache_HCacheLibrary_setObjectString(JNIEnv *env, jobject thiz, jstring key, jstring value) {
-    auto kv = getPathField(env, thiz);
+Java_HCache_HCache_setObjectString(JNIEnv *env, jobject thiz, jstring key, jstring value) {
+    auto kv = getKV(env, thiz);
     if (kv == nullptr) {
         return JNI_FALSE;
     }

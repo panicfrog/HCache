@@ -3,17 +3,20 @@
  */
 package HCache
 
-import javax.security.auth.callback.CallbackHandler
-
-//sealed interface CacheValue
-//sealed class DoubleVale(val value: Double): CacheValue
-//sealed class BoolValue(val value: Boolean): CacheValue
-//sealed class StringValue(val value: String): CacheValue
-//sealed class StringObjectValue(val value: String): CacheValue
-
 /// type int-> 'I', long-> 'L', float-> 'F', double-> 'D', boolean-> 'B', string-> 'S', objectString-> 'OS', None-> 'N'
+enum class CacheType(val flag: String) {
+    INT("I"),
+    LONG("L"),
+    FLOAT("F"),
+    DOUBLE("D"),
+    BOOLEAN("B"),
+    STRING("S"),
+    OBJECT_STRING("OS"),
+    NULL("N")
+}
+
 data class CacheValue(
-    val type: String = "N",
+    val type: String = CacheType.NULL.flag,
     val boolValue: Boolean = false,
     val intValue: Int = 0,
     val longValue: Long = 0,
@@ -23,28 +26,28 @@ data class CacheValue(
 )
 
 fun CacheValue.isBoolean(): Boolean {
-    return this.type == "B"
+    return this.type == CacheType.BOOLEAN.flag
 }
 fun CacheValue.isInt(): Boolean {
-    return this.type == "I"
+    return this.type == CacheType.INT.flag
 }
 fun CacheValue.isLong(): Boolean {
-    return this.type == "L"
+    return this.type == CacheType.LONG.flag
 }
 fun CacheValue.isFloat(): Boolean {
-    return this.type == "F"
+    return this.type == CacheType.FLOAT.flag
 }
 fun CacheValue.isDouble(): Boolean {
-    return this.type == "D"
+    return this.type == CacheType.DOUBLE.flag
 }
 fun CacheValue.isString(): Boolean {
-    return this.type == "S"
+    return this.type == CacheType.STRING.flag
 }
 fun CacheValue.isStringObject(): Boolean {
-    return this.type == "OS"
+    return this.type == CacheType.OBJECT_STRING.flag
 }
 fun CacheValue.isNull(): Boolean {
-    return this.type == "N"
+    return this.type == CacheType.NULL.flag
 }
 
 fun CacheValue.getBoolean(): Boolean? {
@@ -104,7 +107,7 @@ fun CacheValue.getStringObject(): String? {
 }
 
 
-class HCacheLibrary(val path: String) {
+class HCache(val path: String) {
     init {
         System.loadLibrary("HCache")
     }
