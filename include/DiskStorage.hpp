@@ -23,12 +23,12 @@ public:
   explicit DiskKVStorage(const string& path);
   explicit DiskKVStorage(const char *path);
   [[nodiscard]] CacheValue getValue(const string& key) const;
-  void save(const string& key, int    value) const;
-  void save(const string& key, bool   value) const;
-  void save(const string& key, long   value) const;
-  void save(const string& key, float  value) const;
-  void save(const string& key, double value) const;
-  void save(const string& key, const string& value, bool is_object) const;
+  void saveI(const string& key, int    value) const;
+  void saveB(const string& key, bool   value) const;
+  void saveL(const string& key, long   value) const;
+  void saveF(const string& key, float  value) const;
+  void saveD(const string& key, double value) const;
+  void saveS(const string& key, const string& value, bool is_object) const;
 private:
     inline static const string DEFAULT_NAMESPACE = "global";
     inline static const string KEY_DELIMITER = "_";

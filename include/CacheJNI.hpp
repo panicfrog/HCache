@@ -146,7 +146,7 @@ Java_HCache_HCacheLibrary_setBoolean(JNIEnv *env, jobject thiz, jstring key, jbo
         return JNI_FALSE;
     }
     auto _key = jstring2string(env, key);
-    kv->save(_key, value);
+    kv->saveB(_key, value);
     return  JNI_TRUE;
 }
 
@@ -157,7 +157,7 @@ Java_HCache_HCacheLibrary_setInt(JNIEnv *env, jobject thiz, jstring key, jint va
         return JNI_FALSE;
     }
     auto _key = jstring2string(env, key);
-    kv->save(_key, int(value));
+    kv->saveI(_key, int(value));
     return  JNI_TRUE;
 }
 
@@ -168,7 +168,18 @@ Java_HCache_HCacheLibrary_setLong(JNIEnv *env, jobject thiz, jstring key, jlong 
         return JNI_FALSE;
     }
     auto _key = jstring2string(env, key);
-    kv->save(_key, int(value));
+    kv->saveL(_key, int(value));
+    return  JNI_TRUE;
+}
+
+JNIEXPORT jboolean JNICALL
+Java_HCache_HCacheLibrary_setFloat(JNIEnv *env, jobject thiz, jstring key, jfloat value) {
+    auto kv = getPathField(env, thiz);
+    if (kv == nullptr) {
+        return JNI_FALSE;
+    }
+    auto _key = jstring2string(env, key);
+    kv->saveF(_key, float(value));
     return  JNI_TRUE;
 }
 
@@ -179,7 +190,7 @@ Java_HCache_HCacheLibrary_setDouble(JNIEnv *env, jobject thiz, jstring key, jdou
         return JNI_FALSE;
     }
     auto _key = jstring2string(env, key);
-    kv->save(_key, double(value));
+    kv->saveD(_key, double(value));
     return  JNI_TRUE;
 }
 
@@ -191,7 +202,7 @@ Java_HCache_HCacheLibrary_setString(JNIEnv *env, jobject thiz, jstring key, jstr
     }
     auto _key = jstring2string(env, key);
     auto _value = jstring2string(env, value);
-    kv->save(_key, _value, false);
+    kv->saveS(_key, _value, false);
     return  JNI_TRUE;
 }
 
@@ -203,7 +214,7 @@ Java_HCache_HCacheLibrary_setObjectString(JNIEnv *env, jobject thiz, jstring key
     }
     auto _key = jstring2string(env, key);
     auto _value = jstring2string(env, value);
-    kv->save(_key, _value, true);
+    kv->saveS(_key, _value, true);
     return  JNI_TRUE;
 }
 
@@ -211,4 +222,5 @@ Java_HCache_HCacheLibrary_setObjectString(JNIEnv *env, jobject thiz, jstring key
 
 
 #endif //HCACHE_CACHEJNI_H
+
 

@@ -566,10 +566,10 @@ public:
     enum BackupType { Save, Load };
 
     /**
-     * @brief Load or save the database content.
+     * @brief Load or saveI the database content.
      *
      * This function is used to load the contents of a database file on disk
-     * into the "main" database of open database connection, or to save the current
+     * into the "main" database of open database connection, or to saveI the current
      * contents of the database into a database file on disk.
      *
      * @throw SQLite::Exception in case of error

@@ -90,7 +90,6 @@ CacheValue DiskKVStorage::getValue(const string& key) const {
   return CacheValue{};
 }
 
-
 void DiskKVStorage::innerSave(const string& key, const char * value, int size, int type) const {
     SQLite::Statement query(db, "INSERT INTO metadata (key, value, size, type) VALUES (?1, ?2, ?3, ?4) ON CONFLICT (key) DO UPDATE SET value = ?5, size = ?6, type = ?7;");
     auto const _key =  generateKey(key, DEFAULT_NAMESPACE, KEY_DELIMITER);
@@ -104,37 +103,37 @@ void DiskKVStorage::innerSave(const string& key, const char * value, int size, i
     query.exec();
 }
 
-void DiskKVStorage::save(const string& key, const int value) const {
+void DiskKVStorage::saveI(const string& key, int value) const {
   const char * _value = reinterpret_cast<const char *> (&value);
   int size = sizeof(value);
   innerSave(key, _value, size, CacheValue::DataType::INT);
 }
 
-void DiskKVStorage::save(const string& key, const long value) const {
+void DiskKVStorage::saveL(const string& key, long value) const {
   const char * _value = reinterpret_cast<const char *> (&value);
   int size = sizeof(value);
   innerSave(key, _value, size, CacheValue::DataType::LONG);
 }
 
-void DiskKVStorage::save(const string& key, const float value) const {
+void DiskKVStorage::saveF(const string& key, float value) const {
   const char * _value = reinterpret_cast<const char *> (&value);
   int size = sizeof(value);
   innerSave(key, _value, size, CacheValue::DataType::FLOAT);
 }
 
-void DiskKVStorage::save(const string& key, const double value) const {
+void DiskKVStorage::saveD(const string& key, double value) const {
   const char * _value = reinterpret_cast<const char *> (&value);
   int size = sizeof(value);
   innerSave(key, _value, size, CacheValue::DataType::DOUBLE);
 }
 
-void DiskKVStorage::save(const string& key, const bool value) const {
+void DiskKVStorage::saveB(const string& key, bool value) const {
   const char * _value = reinterpret_cast<const char *> (&value);
   int size = sizeof(value);
   innerSave(key, _value, size, CacheValue::DataType::BOOL);
 }
 
-void DiskKVStorage::save(const string& key, const string& value, const bool is_object) const {
+void DiskKVStorage::saveS(const string& key, const string& value, bool is_object) const {
   const char * _value = value.data();
   int size = int(value.size());
   int type = is_object ? CacheValue::DataType::JSON_STRING : CacheValue::DataType::STRING;

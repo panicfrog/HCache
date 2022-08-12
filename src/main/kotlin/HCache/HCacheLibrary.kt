@@ -23,7 +23,7 @@ data class CacheValue(
 )
 
 fun CacheValue.isBoolean(): Boolean {
-    return this.type === "B"
+    return this.type == "B"
 }
 fun CacheValue.isInt(): Boolean {
     return this.type == "I"
@@ -41,7 +41,7 @@ fun CacheValue.isString(): Boolean {
     return this.type == "S"
 }
 fun CacheValue.isStringObject(): Boolean {
-    return this.type == "SO"
+    return this.type == "OS"
 }
 fun CacheValue.isNull(): Boolean {
     return this.type == "N"
@@ -120,6 +120,7 @@ class HCacheLibrary(val path: String) {
     external fun setBoolean(key: String, value: Boolean): Boolean
     external fun setInt(key: String, value: Int): Boolean
     external fun setLong(key: String, value: Long): Boolean
+    external fun setFloat(key: String, value: Float): Boolean
     external fun setDouble(key: String, value: Double): Boolean
     external fun setString(key: String, value: String): Boolean
     external fun setObjectString(key: String, value: String): Boolean
