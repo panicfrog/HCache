@@ -66,11 +66,34 @@ mkdir -p ../build/merge/devices
 libtool -static ../build/simulator/*.a -o ../build/merge/simulator/libHCache.a
 libtool -static ../build/devices/*.a -o ../build/merge/devices/libHCache.a
 
+dir=$(pwd)
+
+if test -d include
+then
+        rm -rf include
+fi
+
+mkdir include
+
+for file in $dir/../include/*; do
+        if test -d $file
+        then
+                cp -r $file ./include
+        else
+                if [[ ${file##*/} == *"JNI"* ]]
+                then
+                        echo $file
+                else
+                        cp $file ./include
+                fi
+        fi
+done
+
 xcodebuild -create-xcframework \
   -library ../build/merge/simulator/libHCache.a \
-  -headers ../include \
+  -headers ./include \
   -library ../build/merge/devices/libHCache.a \
-  -headers ../include \
+  -headers ./include \
   -output ../build/HCache.xcframework
 
 # clean 

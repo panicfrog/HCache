@@ -24,7 +24,7 @@ if (CMAKE_SYSTEM_NAME MATCHES "Android")
 			${CMAKE_CURRENT_SOURCE_DIR}/include/KVSingleton.hpp
 			${CMAKE_CURRENT_SOURCE_DIR}/include/CacheJNI.hpp
 			)
-elseif()
+else()
 	set(HCACHE_SRC
 			${CMAKE_CURRENT_SOURCE_DIR}/src/CacheValue.cpp
 			${CMAKE_CURRENT_SOURCE_DIR}/src/DiskStorage.cpp
@@ -35,7 +35,6 @@ elseif()
 			${CMAKE_CURRENT_SOURCE_DIR}/include/CacheValue.hpp
 			${CMAKE_CURRENT_SOURCE_DIR}/include/DiskStorage.hpp
 			${CMAKE_CURRENT_SOURCE_DIR}/include/KVSingleton.hpp)
-
 endif()
 
 if(${CMAKE_SYSTEM_NAME} MATCHES "iOS")
@@ -70,7 +69,7 @@ if (CMAKE_SYSTEM_NAME MATCHES "Android")
 			${log-lib}
 			SQLiteCpp
 	)
-elseif()
+else()
 	target_link_libraries(
 			${PACKAGE_NAME}
 			SQLiteCpp
