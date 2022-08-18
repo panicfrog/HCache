@@ -1,38 +1,15 @@
-apply plugin: 'com.android.library'
-apply plugin: 'kotlin-android'
-
-def safeExtGet(prop, fallback) {
-  rootProject.ext.has(prop) ? rootProject.ext.get(prop) : fallback
-}
-
-buildscript {
-  ext.kotlin_version = '1.5.30'
-  if (project == rootProject) {
-    repositories {
-      google()
-      mavenCentral()
-      maven {
-        url "https://plugins.gradle.org/m2/"
-      }
-    }
-    dependencies {
-      classpath 'com.android.tools.build:gradle:4.0.1'
-    }
-  }
-  repositories {
-    mavenCentral()
-  }
-  dependencies {
-    classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-  }
+plugins {
+  id 'com.android.library'
 }
 
 
 android {
-  compileSdkVersion safeExtGet('Cache_compileSdkVersion', 29)
+  compileSdkVersion 29
+  ndkVersion '21.4.7075529'
+
   defaultConfig {
-    minSdkVersion safeExtGet('Cache_minSdkVersion', 21)
-    targetSdkVersion safeExtGet('Cache_targetSdkVersion', 29)
+    minSdkVersion 21
+    targetSdkVersion 29
     versionCode 1
     versionName "1.0"
     ndkVersion "21.4.7075529"
@@ -52,9 +29,6 @@ android {
       version "3.10.2"
     }
   }
-  sourceSets {
-    main.java.srcDirs += './src/main/kotlin'
-  }
 
   buildTypes {
     release {
@@ -69,32 +43,19 @@ android {
     targetCompatibility JavaVersion.VERSION_1_8
   }
 
-}
+  buildFeatures {
+    prefabPublishing true
+  }
 
+  prefab {
+    HCache {
+      headers "include"
+    }
+  }
+  packagingOptions {
+    exclude("**/libHCache.so")
+    exclude("**/libc++_shared.so")
+  }
 
-//def extracted = false;
-//task extractJNIFiles {
-//  if (extracted) return
-//  doLast {
-//    configurations.extractJNI.files.each {
-//      def file = it.absoluteFile
-//
-//      copy {
-//        from zipTree(file)
-//        into "$buildDir/$file.name"
-//        include "jni/**/*"
-//      }
-//      extracted = true;
-//    }
-//  }
-//}
-
-// Extract JNI files as soon as first task is added
-//tasks.whenTaskAdded { task ->
-//  task.dependsOn(extractJNIFiles);
-//}
-
-dependencies {
-  implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 }
 
